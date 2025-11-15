@@ -1,0 +1,123 @@
+from tkinter import messagebox
+from thonny import get_workbench
+
+
+import tkinter as tk
+from tkinter import ttk
+
+
+
+class ExerciseView(ttk.Frame):
+    def __init__(self, master):
+        ttk.Frame.__init__(self, master)
+        
+        # Simple text area
+        self.text = tk.Text(self, wrap="word", font=("Arial", 10))
+        scrollbar = ttk.Scrollbar(self, command=self.text.yview)
+        self.text.config(yscrollcommand=scrollbar.set)
+        
+        scrollbar.pack(side="right", fill="y")
+        self.text.pack(fill="both", expand=True, padx=5, pady=5)
+        
+        self.text.config(state="disabled")
+    
+    def load_text(self, content):
+        self.text.config(state="normal")
+        self.text.delete("1.0", "end")
+        self.text.insert("1.0", content)
+        self.text.config(state="disabled")
+
+
+
+
+
+def load_exercise_to_viewer(exercise_code, bucket=None):
+    if bucket:
+        return
+    
+    content = f"""Exercise {exercise_code}
+
+Instructions go here...
+adas asd asd ad asda as as das das dsa 
+d adsa dsa 
+d asd asd asd asd asd
+d asd asd asd ad ads d sa
+d sad asd sadas
+d sad as
+d asd asd
+ asd as
+ d sad a
+ d as
+ das dsa d asd 
+"""
+    
+    view = get_workbench().get_view("ExerciseView")
+    if view:
+        view.load_text(content)
+        get_workbench().show_view("ExerciseView")
+
+
+
+
+
+
+
+
+
+
+
+
+
+def load_exercise(exercise_code):
+    shell = get_workbench().get_view("ShellView")
+
+    #remove the shell view 
+    # use messagebox insted 
+
+
+    if not exercise_code:
+        shell.text.direct_insert("end","not input provied") ##remove this --> silent exit
+        return
+
+    if len(exercise_code) > 14:
+        shell.text.direct_insert("end","out of range input ") ## --> messagebox
+
+        return
+
+    exercise_code = exercise_code.strip()   
+    
+        ## parse the input for the bucket sourse using the "/" seprator 
+
+    load_exercise_to_viewer(exercise_code)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

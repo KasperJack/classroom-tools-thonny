@@ -1,0 +1,52 @@
+from thonny import get_workbench
+from .checker import run_check_dialog
+import os
+import tkinter as tk
+
+def load_plugin():
+    print("DEBUG: Course Checker plugin is loading!")
+    
+    plugin_dir = os.path.dirname(__file__)
+    icon_path = os.path.join(plugin_dir, "check.png")
+    
+    # Store exercise code in workbench for access across functions
+    get_workbench().exercise_code = tk.StringVar()
+    
+    # Add the check button
+    get_workbench().add_command(
+        command_id="course_check",
+        menu_name="run",
+        command_label="Check Exercise",
+        handler=lambda: run_check_dialog(get_workbench().exercise_code.get()),
+        image=icon_path if os.path.exists(icon_path) else None,
+        include_in_toolbar=True,
+        caption="Check Exercise",
+        group=10
+    )
+    
+    # Add text entry to toolbar
+    def add_exercise_input():
+        toolbar = get_workbench().get_toolbar()
+        
+        # Find the next available column
+        existing_columns = []
+        for widget in toolbar.grid_slaves():
+            try:
+                info = widget.grid_info()
+                if 'column' in info:
+                    existing_columns.append(int(info['column']))
+            except:
+                pass
+        
+        next_column = max(existing_columns, default=-1) + 1
+        
+        # Add a label
+        label = tk.Label(toolbar, text="Exercise Code:")
+        label.grid(row=0, column=next_column, padx=(10, 2), sticky="w")
+        
+        # Add entry widget
+        entry = tk.Entry(toolbar, textvariable=get_workbench().exercise_code, width=15)
+        entry.grid(row=0, column=next_column + 1, padx=2, sticky="w")
+    
+    # Schedule adding the entry after UI is ready
+    get_workbench().after(100, add_exercise_input)
