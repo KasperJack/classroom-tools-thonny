@@ -19,50 +19,114 @@ class ExerciseView(ttk.Frame):
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
         
+        # Track current exercise
+        self.current_exercise_code = None
+        self.current_bucket = None
+        self.plugin_dir = os.path.dirname(__file__)
+        
         self.markdown_converter = Markdown(
             extras=['fenced-code-blocks', 'tables', 'break-on-newline', 'code-friendly']
         )
         
+        
         self.html_frame = HtmlFrame(self)
         self.html_frame.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
         
-        # Status bar
-        self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X) 
-        
-    
-        
-
-
-
-
-
-
-
-
-
+        # Button frame (created but buttons added dynamically)
         self.button_frame = ttk.Frame(self)
         self.button_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
         
-        # Run Tests button
-        self.run_button = ttk.Button(
-            self.button_frame, 
-            text="▶ Run Tests",
-            command=self.run_tests
-        )
-        self.run_button.pack(side=tk.LEFT, padx=5)
-        
-        # Show Solution button (optional)
-        self.solution_button = ttk.Button(
-            self.button_frame,
-            text="💡 Show Solution",
-            command=self.show_solution
-        )
-        self.solution_button.pack(side=tk.LEFT, padx=5)
+        # Button references (will be created/destroyed as needed)
+        self.run_button = None
+        self.solution_button = None
         
         # Status bar
-        #self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        #self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+    
+
+
+
+    def _update_buttons(self):
+        """Create or destroy buttons based on available files"""
+        # Clear existing buttons
+        if self.run_button:
+            self.run_button.destroy()
+            self.run_button = None
+        if self.solution_button:
+            self.solution_button.destroy()
+            self.solution_button = None
+        
+        if not self.current_exercise_code:
+            return
+        
+        # Check for tests.toml
+        test_file = os.path.join(
+            self.plugin_dir, 'bucket', self.current_bucket, 
+            self.current_exercise_code, 'tests.toml'
+        )
+        
+        # Check for solution.py
+        solution_file = os.path.join(
+            self.plugin_dir, 'bucket', self.current_bucket,
+            self.current_exercise_code, 'solution.py'
+        )
+        
+        # Create Run Tests button if tests exist
+        if os.path.exists(test_file):
+            self.run_button = ttk.Button(
+                self.button_frame,
+                text="▶ Run Tests",
+                command=self.run_tests
+            )
+            self.run_button.pack(side=tk.LEFT, padx=5)
+        
+        # Create Show Solution button if solution exists
+        if os.path.exists(solution_file):
+            self.solution_button = ttk.Button(
+                self.button_frame,
+                text="💡 Show Solution",
+                command=self.show_solution
+            )
+            self.solution_button.pack(side=tk.LEFT, padx=5)
+    
+    def load_markdown(self, markdown_text, exercise_code=None, bucket="default"):
+        """Load markdown text and render it as HTML"""
+        # Store current exercise info
+        self.current_exercise_code = exercise_code
+        self.current_bucket = bucket
+        
+        try:
+            html_content = self.markdown_converter.convert(markdown_text)
+            safe_html = self._sanitize_html(html_content)
+            full_html = self._create_full_html(safe_html)
+            
+            self.html_frame.load_html(full_html)
+            self.status_bar.config(text="Exercise loaded successfully")
+            
+            # Update buttons based on available files
+            self._update_buttons()
+            
+        except Exception as e:
+            error_msg = f"Error rendering markdown: {str(e)}"
+            print(error_msg)
+            self.status_bar.config(text=error_msg)
+            error_html = self._create_full_html(f"<h1>Error</h1><p>{error_msg}</p><pre>{markdown_text}</pre>")
+            self.html_frame.load_html(error_html)
+
+
+  
+    
+    def run_tests(self):
+        """Run the tests for current exercise"""
+        check_code()
+    
+    def show_solution(self):
+        """Show the solution"""
+        # Open solution.py in editor
+        pass
+
+
 
 
 
@@ -90,21 +154,6 @@ class ExerciseView(ttk.Frame):
         cleaned = re.sub(r'javascript:', '', cleaned, flags=re.IGNORECASE)
         
         return cleaned
-
-
-
-    def run_tests(self):
-        """Run the tests for current exercise"""
-        #shell = get_workbench().get_view("ShellView")
-        #shell.text.direct_insert("end", "Running tests...\n")
-        check_code()
-    
-    def show_solution(self):
-        """Show the solution"""
-        # Open solution.py in editor
-        pass
-
-
 
 
     
@@ -293,28 +342,6 @@ class ExerciseView(ttk.Frame):
 </html>
 """
     
-    def load_markdown(self, markdown_text):
-        """Load markdown text and render it as HTML"""
-        try:
-            html_content = self.markdown_converter.convert(markdown_text)
-            
-            # sanitize HTML
-            safe_html = self._sanitize_html(html_content)
-            
-            full_html = self._create_full_html(safe_html)
-            
-            # Load into HtmlFrame (this supports proper text selection!)
-            self.html_frame.load_html(full_html)
-            
-            self.status_bar.config(text="Exercise loaded successfully")
-            
-        except Exception as e:
-            error_msg = f"Error rendering markdown: {str(e)}"
-            print(error_msg)
-            self.status_bar.config(text=error_msg)
-            error_html = self._create_full_html(f"<h1>Error</h1><p>{error_msg}</p><pre>{markdown_text}</pre>")
-            self.html_frame.load_html(error_html)
-
 
 
 
