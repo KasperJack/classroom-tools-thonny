@@ -1,7 +1,5 @@
 from thonny import get_workbench
 import tkinter as tk
-
-from .checker import run_tests
 from .exercise import load_exercise, ExerciseView
 
 

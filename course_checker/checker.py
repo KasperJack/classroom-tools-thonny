@@ -2,7 +2,7 @@ import subprocess
 from tkinter import messagebox
 from thonny import get_workbench
 
-def run_tests(exc):
+def run_tests():
     editor = get_workbench().get_editor_notebook().get_current_editor()
     current_script = editor.get_filename()
         
@@ -15,7 +15,7 @@ def run_tests(exc):
     editor.save_file()
     shell = get_workbench().get_view("ShellView")
 
-    shell.text.direct_insert("end",exc)
+    shell.text.direct_insert("end",current_script)
     return
 
     
