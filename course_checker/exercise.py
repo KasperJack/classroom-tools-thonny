@@ -2,6 +2,7 @@ from tkinter import messagebox
 from thonny import get_workbench
 import tkinter as tk
 from tkinter import ttk
+from .checker import check_code
 import re
 import os 
 
@@ -91,9 +92,9 @@ class ExerciseView(ttk.Frame):
 
     def run_tests(self):
         """Run the tests for current exercise"""
-        shell = get_workbench().get_view("ShellView")
-        shell.text.direct_insert("end", "Running tests...\n")
-        # Call your test runner here
+        #shell = get_workbench().get_view("ShellView")
+        #shell.text.direct_insert("end", "Running tests...\n")
+        check_code()
     
     def show_solution(self):
         """Show the solution"""
