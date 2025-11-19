@@ -12,6 +12,9 @@ from tkinterweb import HtmlFrame
 from markdown2 import Markdown
 
 
+
+
+
 class ExerciseView(ttk.Frame):
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
