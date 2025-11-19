@@ -19,7 +19,6 @@ class ExerciseView(ttk.Frame):
     def __init__(self, master):
         ttk.Frame.__init__(self, master)
         
-        # Track current exercise
         self.current_exercise_dir = None
         #self.current_bucket = None
         #self.plugin_dir = os.path.dirname(__file__)
@@ -41,8 +40,8 @@ class ExerciseView(ttk.Frame):
         self.solution_button = None
         
         # Status bar
-        #self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        #self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
     
 
 
