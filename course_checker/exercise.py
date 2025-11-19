@@ -20,9 +20,9 @@ class ExerciseView(ttk.Frame):
         ttk.Frame.__init__(self, master)
         
         # Track current exercise
-        self.current_exercise_code = None
-        self.current_bucket = None
-        self.plugin_dir = os.path.dirname(__file__)
+        self.current_exercise_dir = None
+        #self.current_bucket = None
+        #self.plugin_dir = os.path.dirname(__file__)
         
         self.markdown_converter = Markdown(
             extras=['fenced-code-blocks', 'tables', 'break-on-newline', 'code-friendly']
@@ -41,8 +41,8 @@ class ExerciseView(ttk.Frame):
         self.solution_button = None
         
         # Status bar
-        self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        #self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
+        #self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
     
 
 
@@ -57,22 +57,14 @@ class ExerciseView(ttk.Frame):
             self.solution_button.destroy()
             self.solution_button = None
         
-        if not self.current_exercise_code:
+        if not self.current_exercise_dir:
             return
         
-        # Check for tests.toml
-        test_file = os.path.join(
-            self.plugin_dir, 'bucket', self.current_bucket, 
-            self.current_exercise_code, 'tests.toml'
-        )
+        test_file = os.path.join(self.current_exercise_dir, 'tests.toml')
         
-        # Check for solution.py
-        solution_file = os.path.join(
-            self.plugin_dir, 'bucket', self.current_bucket,
-            self.current_exercise_code, 'solution.py'
-        )
+        solution_file = os.path.join(self.current_exercise_dir, 'solution.py')
         
-        # Create Run Tests button if tests exist
+
         if os.path.exists(test_file):
             self.run_button = ttk.Button(
                 self.button_frame,
@@ -81,7 +73,6 @@ class ExerciseView(ttk.Frame):
             )
             self.run_button.pack(side=tk.LEFT, padx=5)
         
-        # Create Show Solution button if solution exists
         if os.path.exists(solution_file):
             self.solution_button = ttk.Button(
                 self.button_frame,
@@ -90,11 +81,12 @@ class ExerciseView(ttk.Frame):
             )
             self.solution_button.pack(side=tk.LEFT, padx=5)
     
-    def load_markdown(self, markdown_text, exercise_code=None, bucket="default"):
+
+
+    def load_markdown(self, markdown_text, exercise_dir):
         """Load markdown text and render it as HTML"""
         # Store current exercise info
-        self.current_exercise_code = exercise_code
-        self.current_bucket = bucket
+        self.current_exercise_dir = exercise_dir
         
         try:
             html_content = self.markdown_converter.convert(markdown_text)
@@ -104,7 +96,6 @@ class ExerciseView(ttk.Frame):
             self.html_frame.load_html(full_html)
             self.status_bar.config(text="Exercise loaded successfully")
             
-            # Update buttons based on available files
             self._update_buttons()
             
         except Exception as e:
@@ -115,8 +106,8 @@ class ExerciseView(ttk.Frame):
             self.html_frame.load_html(error_html)
 
 
-  
-    
+
+
     def run_tests(self):
         """Run the tests for current exercise"""
         check_code()
@@ -348,25 +339,22 @@ class ExerciseView(ttk.Frame):
 
 
 
-def load_exercise_to_viewer(exercise_code,bucket="default"):
 
+def load_exercise_to_viewer(exercise_code, bucket="default"):
     shell = get_workbench().get_view("ShellView")
     plugin_dir = os.path.dirname(__file__)
-
-
     target_file_path = os.path.join(plugin_dir, 'bucket', bucket, exercise_code, 'index.md')
     
     shell.text.direct_insert("end", f"Loading file: {target_file_path}\n")
-    #return
 
     try:
         with open(target_file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Load it into the viewer
         view = get_workbench().get_view("ExerciseView")
         if view:
-            view.load_markdown(content)
+            ex_dir =  target_file_path = os.path.join(plugin_dir, 'bucket', bucket, exercise_code)
+            view.load_markdown(content,ex_dir)
             get_workbench().show_view("ExerciseView")
             shell.text.direct_insert("end", f"Exercise {exercise_code} loaded successfully\n")
         else:
