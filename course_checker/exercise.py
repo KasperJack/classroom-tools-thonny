@@ -24,8 +24,58 @@ class ExerciseView(ttk.Frame):
         
         # Status bar
         self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X) 
+        
     
+        
+
+
+
+
+
+
+
+
+
+        self.button_frame = ttk.Frame(self)
+        self.button_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=5, pady=5)
+        
+        # Run Tests button
+        self.run_button = ttk.Button(
+            self.button_frame, 
+            text="▶ Run Tests",
+            command=self.run_tests
+        )
+        self.run_button.pack(side=tk.LEFT, padx=5)
+        
+        # Show Solution button (optional)
+        self.solution_button = ttk.Button(
+            self.button_frame,
+            text="💡 Show Solution",
+            command=self.show_solution
+        )
+        self.solution_button.pack(side=tk.LEFT, padx=5)
+        
+        # Status bar
+        #self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
+        #self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def _sanitize_html(self, html_content):
         """Remove potentially dangerous HTML elements"""
         # Remove script tags
@@ -36,7 +86,25 @@ class ExerciseView(ttk.Frame):
         cleaned = re.sub(r'javascript:', '', cleaned, flags=re.IGNORECASE)
         
         return cleaned
-    ## main adding was 20
+
+
+
+    def run_tests(self):
+        """Run the tests for current exercise"""
+        shell = get_workbench().get_view("ShellView")
+        shell.text.direct_insert("end", "Running tests...\n")
+        # Call your test runner here
+    
+    def show_solution(self):
+        """Show the solution"""
+        # Open solution.py in editor
+        pass
+
+
+
+
+    
+        ## main adding was 20
     def _create_full_html(self, content):
         """Create a full HTML document with GitHub-style CSS"""
         return f"""
