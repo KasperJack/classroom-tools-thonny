@@ -40,8 +40,8 @@ class ExerciseView(ttk.Frame):
         self.solution_button = None
         
         # Status bar
-        self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        #self.status_bar = ttk.Label(self, text="Ready", relief=tk.SUNKEN)
+        #self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
     
 
 
@@ -93,14 +93,14 @@ class ExerciseView(ttk.Frame):
             full_html = self._create_full_html(safe_html)
             
             self.html_frame.load_html(full_html)
-            self.status_bar.config(text="Exercise loaded successfully")
+            #self.status_bar.config(text="Exercise loaded successfully")
             
             self._update_buttons()
             
         except Exception as e:
             error_msg = f"Error rendering markdown: {str(e)}"
             print(error_msg)
-            self.status_bar.config(text=error_msg)
+            #self.status_bar.config(text=error_msg)
             error_html = self._create_full_html(f"<h1>Error</h1><p>{error_msg}</p><pre>{markdown_text}</pre>")
             self.html_frame.load_html(error_html)
 
